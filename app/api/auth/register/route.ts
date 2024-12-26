@@ -10,6 +10,14 @@ export async function POST(req: NextRequest) {
     // Validate required fields
     if (!name || !email || !password || !role) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+
+    }
+
+    // validate roles
+
+    const validRoles = ["admin", "creator", "client"];
+    if (!validRoles.includes(role)) {
+      return NextResponse.json({ error: "Invalid role. Allowed roles are 'admin', 'creator', or 'client'." }, { status: 400 });
     }
 
     // Check if the user already exists

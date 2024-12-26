@@ -7,10 +7,19 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 export default function Login() {
   const [activeTab, setActiveTab] = useState("login")
   const [email, setEmail] = useState("")
+  const [name, setName] = useState("")
+  const [role, setRole] = useState("")
   const [password, setPassword] = useState("")
   const router = useRouter()
 
@@ -31,26 +40,26 @@ export default function Login() {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-  
-    if (!email || !password) {
-      console.error("Email and password are required.");
+
+    if (!name || !email || !password || !role) {
+      console.error("All fields are required.");
       return;
     }
-  
+
     try {
       const response = await fetch("/api/auth/register", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ name, email, password, role }),
       });
-  
+
       const data = await response.json();
-  
+
       if (response.ok) {
         console.log("User registered successfully:", data);
-        
+
         await signIn("credentials", { email, password, redirect: false });
         router.push("/");
       } else {
@@ -60,7 +69,7 @@ export default function Login() {
       console.error("Registration failed:", error);
     }
   };
-  
+
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
@@ -96,18 +105,34 @@ export default function Login() {
               {/* Implement registration form here */}
 
               <form onSubmit={handleRegister} className="space-y-4">
-                <Input 
-                  type="email" 
-                  placeholder="Email" 
+                <Input
+                  type="text"
+                  placeholder="Name"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+                <Input
+                  type="email"
+                  placeholder="Email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                 />
-                <Input 
-                  type="password" 
-                  placeholder="Password" 
+                <Input
+                  type="password"
+                  placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
+                <Select onValueChange={(value) => setRole(value)}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Role" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="client">Client</SelectItem>
+                    <SelectItem value="creator">Creator</SelectItem>
+                    <SelectItem value="admin">Admin</SelectItem>
+                  </SelectContent>
+                </Select>
                 <Button type="submit" className="w-full">Register</Button>
               </form>
               
